@@ -1190,6 +1190,24 @@ public class InAppBrowser extends CordovaPlugin {
         @TargetApi(Build.VERSION_CODES.N)
         @Override
         public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request) {
+
+            String url = request.getUrl().toString();
+
+            LOG.d(LOG_TAG, "shouldOverrideUrlLoading entered! " + url);
+            if (url.matches(".*\\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|mp3|mp4|avi|mov|apk|odt|ods)(\\?.*)?$")) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.parse(url), "*/*");
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                try {
+                    cordova.getActivity().startActivity(intent);
+                    LOG.d(LOG_TAG, "shouldOverrideUrlLoading sending intent!");
+                } catch (ActivityNotFoundException e) {
+                    LOG.e(LOG_TAG, "No application found to open " + url, e);
+                }
+
+                return true;
+            }
+
             return shouldOverrideUrlLoading(request.getUrl().toString(), request.getMethod());
         }
 
