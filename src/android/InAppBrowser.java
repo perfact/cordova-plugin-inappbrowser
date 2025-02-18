@@ -1193,7 +1193,6 @@ public class InAppBrowser extends CordovaPlugin {
 
             String url = request.getUrl().toString();
 
-            LOG.d(LOG_TAG, "shouldOverrideUrlLoading entered! " + url);
             if (url.matches(".*\\.(pdf|rtf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|mp3|mp4|mpg|mpeg|avi|wmv|mov|apk|odt|ods|txt|csv)(\\?.*)?$")) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setDataAndType(Uri.parse(url), "*/*");
