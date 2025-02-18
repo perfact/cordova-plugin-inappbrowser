@@ -20,8 +20,6 @@ package org.apache.cordova.inappbrowser;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -1196,15 +1194,8 @@ public class InAppBrowser extends CordovaPlugin {
 
             if (url.matches(".*\\.(pdf|rtf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|mp3|mp4|mpg|mpeg|avi|wmv|mov|apk|odt|ods|txt|csv)(\\?.*)?$")) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.parse(url), "*/*");
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                try {
-                    cordova.getActivity().startActivity(intent);
-                    LOG.d(LOG_TAG, "shouldOverrideUrlLoading sending intent!");
-                } catch (ActivityNotFoundException e) {
-                    LOG.e(LOG_TAG, "No application found to open " + url, e);
-                }
-
+                intent.setDataAndType(Uri.parse(url));
+                cordova.getActivity().startActivity(intent);
                 return true;
             }
 
