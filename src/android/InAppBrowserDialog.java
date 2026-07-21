@@ -47,6 +47,13 @@ public class InAppBrowserDialog extends Dialog {
         } else {
             // better to go through the in inAppBrowser
             // because it does a clean up
+            // hardware_back config drives three behaviours:
+            //   disabled -> ignore the press entirely (prevents accidental exit)
+            //   yes      -> navigate back in history, close when there is none
+            //   no       -> close immediately (same as "yes" without history)
+            if (this.inAppBrowser.hardwareBackDisabled()) {
+                return;
+            }
             if (this.inAppBrowser.hardwareBack() && this.inAppBrowser.canGoBack()) {
                 this.inAppBrowser.goBack();
             }  else {

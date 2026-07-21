@@ -129,6 +129,7 @@ public class InAppBrowser extends CordovaPlugin {
     private boolean clearAllCache = false;
     private boolean clearSessionCache = false;
     private boolean hadwareBackButton = true;
+    private boolean hardwareBackDisabled = false;
     private boolean mediaPlaybackRequiresUserGesture = false;
     private boolean shouldPauseInAppBrowser = false;
     private boolean useWideViewPort = true;
@@ -578,6 +579,14 @@ public class InAppBrowser extends CordovaPlugin {
     }
 
     /**
+     * Has the user set the hardware back button to be ignored entirely
+     * @return boolean
+     */
+    public boolean hardwareBackDisabled() {
+        return hardwareBackDisabled;
+    }
+
+    /**
      * Checks to see if it is possible to go forward one page in history, then does so.
      */
     private void goForward() {
@@ -652,8 +661,10 @@ public class InAppBrowser extends CordovaPlugin {
             String hardwareBack = features.get(HARDWARE_BACK_BUTTON);
             if (hardwareBack != null) {
                 hadwareBackButton = hardwareBack.equals("yes") ? true : false;
+                hardwareBackDisabled = hardwareBack.equals("disabled") ? true : false;
             } else {
                 hadwareBackButton = DEFAULT_HARDWARE_BACK;
+                hardwareBackDisabled = false;
             }
             String mediaPlayback = features.get(MEDIA_PLAYBACK_REQUIRES_USER_ACTION);
             if (mediaPlayback != null) {
@@ -1140,6 +1151,16 @@ public class InAppBrowser extends CordovaPlugin {
         @TargetApi(Build.VERSION_CODES.N)
         @Override
         public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request) {
+
+            String url = request.getUrl().toString();
+
+            if (url.matches(".*\\.(pdf|rtf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|mp3|mp4|mpg|mpeg|avi|wmv|mov|apk|odt|ods|txt|csv)(\\?.*)?$")) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                cordova.getActivity().startActivity(intent);
+                return true;
+            }
+
             return shouldOverrideUrlLoading(request.getUrl().toString(), request.getMethod());
         }
 
